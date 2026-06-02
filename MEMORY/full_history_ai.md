@@ -481,3 +481,26 @@ context_for_next_session:
 decisions_made: []
 followups: []
 ---
+
+---
+session: 2026-06-02T04:10Z
+duration_min: 18
+issue: 46
+focus: stream_metrics_to_dict_plus_backpressure_result_to_dict_close_last_asdict_in_scripts
+phase: night_session_phase_b_iteration_7
+delta:
+  files_changed: 3   # async_pipelines/core.py + scripts/bench_backpressure.py + tests/test_stream.py
+  files_added: 1     # tests/test_bench_backpressure.py
+  tests_added: 7
+context_for_next_session:
+  - follow_on_to_45_closed_workload_to_dict_run_result_to_dict_dump_benchmark_json_at_package_level_this_pr_closes_two_remaining_asdict_surfaces_in_async_pipelines_core_stream_metrics_and_scripts_bench_backpressure
+  - stream_metrics_to_dict_pins_five_field_public_contract_excludes_private_started_monotonic_pre_46_asdict_m_silently_leaked_the_internal_timing_checkpoint_into_bench_backpressure_json
+  - backpressure_result_to_dict_seven_field_contract_metrics_shallow_copied_replaces_both_l96_metrics_eq_asdict_m_and_l166_list_comp
+  - scripts_bench_1000_doc_py_already_wired_through_dump_benchmark_json_by_45_no_work_needed_there
+  - grep_for_asdict_under_scripts_and_async_pipelines_returns_only_documentation_references_no_source_level_serialization_remains
+  - 194_pytest_to_201_seven_new_cases_three_in_test_stream_plus_four_in_new_test_bench_backpressure_py
+  - ruff_check_format_clean
+  - observability_parity_arc_for_this_repo_now_complete_at_both_package_and_script_level_paralleling_llm_cost_optimizer_54
+decisions_made: []
+followups: []
+---

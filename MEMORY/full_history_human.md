@@ -302,3 +302,19 @@ Five new tests in `tests/test_benchmark.py`: AsyncPipeline rejects zero and nega
 **Open questions / blockers:** None — ready for review.
 
 **Next session:** Continue the day-session loop. Remaining untouched-since-2026-05-27 candidates: `vector-search-at-scale` (no JSONL inputs, no obvious analog), `agent-orchestration-platform`, `mcp-server-cookbook`, `nextjs-streaming-ai-patterns`, `ai-app-integration-tests`. Check `agent-orchestration-platform` next per build sequence.
+
+## 2026-06-02 — Issue #46: StreamMetrics.to_dict + BackpressureResult.to_dict (close last asdict gaps)
+**Duration:** ~18 min · **Branch:** `session/2026-06-02-0403-issue-46`
+
+- Follow-on to #45's package-level `Workload.to_dict` / `RunResult.to_dict` / `dump_benchmark_json`. Closed the two remaining `asdict` surfaces:
+  - `async_pipelines/core.py`: `StreamMetrics.to_dict` pins the 5-field **public** contract and explicitly excludes the private `_started_monotonic` field. Pre-#46 `asdict(m)` silently leaked that internal timing checkpoint into the `scripts/bench_backpressure.py` JSON, which downstream operators reading the bench output would see as a confusing field with no documented meaning.
+  - `scripts/bench_backpressure.py`: `BackpressureResult.to_dict` (7-field contract, `metrics` shallow-copied) replaces both `metrics=asdict(m)` (L96) and `[asdict(r) for r in results]` (L166). `asdict` import dropped.
+- `scripts/bench_1000_doc.py` was already wired through `dump_benchmark_json` by #45 — no work needed there. (My initial grep showed stale asdict references but that was pre-rebase against the latest main.)
+- 7 new tests: 3 in `test_stream.py` (StreamMetrics sorted-keys pin, `_started_monotonic` exclusion regression net, value round-trip) + 4 in new `test_bench_backpressure.py` (BackpressureResult sorted-keys pin, value round-trip, metrics shallow-copy guard, JSON round-trip). 201/201 pass (was 194). Ruff check + format clean.
+- `grep -rn asdict scripts/ async_pipelines/` returns only documentation references (the inline comments documenting the prior asdict shape). No source-level asdict serialization remains.
+
+**Why this work, this session:** Iteration 7 of the night session loop. After completing the observability-parity arc across `llm-cost-optimizer` (via #54), audit of `python-async-llm-pipelines` showed two parallel asdict surfaces that #45's package-level work hadn't covered. This PR completes both levels (package + script) of the arc for this repo, matching the sister-repo posture in `llm-cost-optimizer` after #54.
+
+**Open questions / blockers:** none — ready for review.
+
+**Next session:** Observability-parity arc fully saturated across both package and script levels in this repo. Future iterations can pivot to operator-blocked items (demo capture) or novel parity opportunities outside the asdict / to_dict arc.
